@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose')
 
 const itemsRoutes = require('./src/routes/items-routes')
 const usersRoutes = require('./src/routes/users-routes')
@@ -25,4 +26,11 @@ app.use((error, req, res, next) => {
   res.json( { message: error.message || 'An unknown error occured!' })
 })
 
-app.listen(5000)
+mongoose.connect('mongodb+srv://splitadmin:split123@cluster0.hck2j.mongodb.net/splitDB?retryWrites=true&w=majority', {useUnifiedTopology: true, useNewUrlParser: true})
+  .then(() => {
+    app.listen(5000)
+  })
+  .catch(err => {
+    console.log(err)
+  })
+

@@ -1,44 +1,51 @@
-const { v4: uuid } = require('uuid');
+const mongoose = require('mongoose')
 const { validationResult } = require('express-validator')
 
 const HttpError = require('../models/http-error')
+const Item = require('../models/item')
+const User = require('../models/user');
 
-let DUMMY_ITEMS = [
-  {
-    id: 'i1',
-    title: 'Slagborr',
-    description: 'En borr av slag',
-    image: 'https://www.bauhaus.se/media/catalog/product/cache/9d0f0c8eb514963e1fda0eb95b4bf3ab/1/1/1167577a.jpg',
-    owner: 'u1',
-    currentUser: 'u1'
+
+const getItemById = async (req, res, next) => {
+  const itemId = req.params.iid
+  let item
+
+  try {
+    item = await Item.findById(itemId)
+  } catch (err) {
+    const error = new HttpError('Something went wrong, could not find an item.', 500)
+    return next(error)
   }
-]
-
-const getItemById = (req, res, next) => {
-  const itemId = req.params.iid;
-  const item = DUMMY_ITEMS.find(i => i.id === itemId)
 
   if(!item) {
-    return next(new HttpError('Could not find an item with that ID', 404))
+    const error = new HttpError('Could not find an item with that ID', 404)
+    return next(error)
   }
 
-  res.json({ item })
+  res.json({ item: item.toObject({ getters: true }) })
 }
 
-const getItemsByUserId = (req, res, next) => {
+const getItemsByUserId = async (req, res, next) => {
   const userId = req.params.uid
+  let userWithItems
 
-  const items = DUMMY_ITEMS.filter(i => i.currentUser === userId)
+  try {
+    userWithItems = await User.findById(userId).populate('items')
 
-  if(!items || items.length === 0) {
+  } catch(err) {
+    const error = new HttpError('Fetching items failed, please try again', 500)
+    return next(error)
+  }
+
+  if(!userWithItems || userWithItems.items.length === 0) {
     const error = new HttpError('Could not find an item with that user ID', 404)
     return next(error)
   }
 
-  res.json({ items })
+  res.json({ items: userWithItems.items.map(i => i.toObject({ getters: true })) })
 }
 
-const createItem = (req, res, next) => {
+const createItem = async (req, res, next) => {
 
   const errors = validationResult(req)
   if(!errors.isEmpty()) {
@@ -46,21 +53,47 @@ const createItem = (req, res, next) => {
     throw new HttpError('Invalid inputs passed', 422)
   }
   const { title, description, image, owner, currentUser } = req.body
-  const createdItem = {
-    id: uuid(),
+  const createdItem = new Item({
     title,
     description,
     image,
     owner,
     currentUser
+  })
+
+  let user
+
+  try {
+    user = await User.findById(currentUser)
+
+  } catch(err) {
+    const error = new HttpError('Creating item failed, please try again', 500)
+    return next(error)
   }
 
-  DUMMY_ITEMS.push(createdItem)
+  if(!user) {
+    const error = new HttpError('Could not find user with that ID', 404)
+    return next(error)
+  }
+
+
+  try {
+    const sess = await mongoose.startSession()
+    sess.startTransaction()
+    await createdItem.save({ session: sess })
+    user.items.push(createdItem)
+    await user.save({ session: sess })
+    await sess.commitTransaction()
+
+  } catch(err) {
+    const error = new HttpError('Creating item failed, please try again', 500)
+    return next(error)
+  }
 
   res.status(201).json({ item: createdItem })
 }
 
-const updateItem = (req, res, next) => {
+const updateItem = async (req, res, next) => {
   
   const errors = validationResult(req)
   if(!errors.isEmpty()) {
@@ -71,26 +104,58 @@ const updateItem = (req, res, next) => {
   const { title, description, image } = req.body
   const itemId = req.params.iid
 
-  const updatedItem = { ...DUMMY_ITEMS.find(i => i.id === itemId)}
-  const itemIndex = DUMMY_ITEMS.findIndex(i => i.id === itemId)
+  let item
 
-  updatedItem.title = title;
-  updatedItem.description = description
-  updatedItem.image = image
-
-  DUMMY_ITEMS[itemIndex] = updatedItem
-
-  res.status(200).json({item: updatedItem})
-}
-
-const deleteItem = (req, res, next) => {
-  const itemId = req.params.iid
-
-  if(!DUMMY_ITEMS.find(i => i.id === itemId)) {
-    throw new HttpError('Could not find a place for that ID', 404)
+  try {
+    item = await Item.findById(itemId)
+  } catch(err) {
+    const error = new HttpError('Something went wrong, could not update item', 500)
+    return next(error)
   }
 
-  DUMMY_ITEMS = DUMMY_ITEMS.filter(i => i.id !== itemId)
+  item.title = title;
+  item.description = description
+  item.image = image
+
+  try {
+    await item.save()
+  } catch(err) {
+    const error = new HttpError('Something went wrong, could not update item', 500)
+    return next(error)
+  }
+
+  res.status(200).json({item: item.toObject({ getters: true })})
+}
+
+const deleteItem = async (req, res, next) => {
+  const itemId = req.params.iid
+  let item
+  
+  try {
+    item = await Item.findById(itemId).populate('currentUser')
+  } catch(err) {
+    const error = new HttpError('Something went wrong, could not delete item', 500)
+    return next(error)
+  }
+
+  if (!item) {
+    const error = new HttpError('Could not find item for this id', 404)
+    return next(error)
+  }
+
+  try {
+    const sess = await mongoose.startSession()
+    sess.startTransaction()
+    await item.remove({session: sess})
+    item.currentUser.items.pull(item)
+    await item.currentUser.save({session: sess})
+    await sess.commitTransaction()
+    
+  } catch(err) {
+    const error = new HttpError('Something went wrong, could not delete item', 500)
+    return next(error)
+  }
+    
   res.status(200).json({message: 'Deleted item'})
 }
 
