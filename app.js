@@ -30,22 +30,6 @@ app.use((req, res, next) => {
   next();
 });
 
-//  ========== UPPGIFT 4 ===========
-
-const morgan = require('morgan')
-const helmet = require('helmet')
-
-
-app.use(morgan('common'))
-app.use(helmet())
-
-
-app.get('/api/knapp', (req, res) => {
-  res.send('Frontend-knapp klickad, hej från backend!')
-})
-
-
-// ===================================
 
 app.use('/api/items', itemsRoutes)
 app.use('/api/users', usersRoutes)
