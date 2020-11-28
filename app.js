@@ -63,6 +63,8 @@ mongoose
     console.log(err)
   })
 
+
+module.exports = app
   // mongoose
   // .connect(`mongodb+srv://splitadmin:split123@cluster0.hck2j.mongodb.net/splitDB?retryWrites=true&w=majority`, {useUnifiedTopology: true, useNewUrlParser: true})
   // .then(() => {
