@@ -53,23 +53,31 @@ app.use((error, req, res, next) => {
   res.json( { message: error.message || 'An unknown error occured!' })
 })
 
-mongoose
-  .connect(process.env.DB_URL, {useUnifiedTopology: true, useNewUrlParser: true}
-    )
+
+  mongoose
+  .connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.hck2j.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`, {useUnifiedTopology: true, useNewUrlParser: true})
   .then(() => {
-    app.listen(process.env.PORT)
-  })
-  .catch(err => {
-    console.log(err)
-  })
+      app.listen(5000)
+    })
+    .catch(err => {
+        console.log(err)
+      })
+      
 
 
+// mongoose
+//   .connect(process.env.DB_URL, {useUnifiedTopology: true, useNewUrlParser: true}
+//     )
+//   .then(() => {
+//     app.listen(process.env.PORT)
+//   })
+//   .catch(err => {
+//     console.log(err)
+//   })
+
+
+  
+
+      
+      
 module.exports = app
-  // mongoose
-  // .connect(`mongodb+srv://splitadmin:split123@cluster0.hck2j.mongodb.net/splitDB?retryWrites=true&w=majority`, {useUnifiedTopology: true, useNewUrlParser: true})
-  // .then(() => {
-  //   app.listen(5000)
-  // })
-  // .catch(err => {
-  //   console.log(err)
-  // })

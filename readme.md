@@ -1,5 +1,8 @@
 @ ARASTO:
 
+Deploy info:
+HEROKU
+
 Min backend är uppdelad i två delar, User och Items.
 I appen ska användare ha ett inventory med items,
 där man kan se och "trada" items mellan varandra.

@@ -1,0 +1,9 @@
+{
+  "env": {
+    "DB_USER": "splitadmin",
+    "DB_PASSWORD": "split123",
+    "DB_NAME": "splitDB",
+    "JWT_KEY": "secret_key_dont__share"
+
+  }
+}
