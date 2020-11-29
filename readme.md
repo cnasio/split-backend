@@ -41,5 +41,3 @@ Där har jag också listat det jag gjort i varje uppdatering.
 
 .
 .
-
-=== SPLIT BACKEND README ====
