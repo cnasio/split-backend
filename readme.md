@@ -1,22 +1,46 @@
-@ ARASTO:
+Hej Arasto!
 
-Deploy info:
-HEROKU
+Pga. att jag har haft fullt upp med mitt nya uppdrag på Volvo så har jag inte kunnat färdigställa allt i appen på det sätt jag hade visualiserat.
 
-Min backend är uppdelad i två delar, User och Items.
-I appen ska användare ha ett inventory med items,
-där man kan se och "trada" items mellan varandra.
+Tanken är en app där man ska kunna adda vänner och skapa inventory med IRL-saker, som man sedan kan requesta mellan varandra, för att på ett enkelt sätt kunna dela på dyra prylar mellan vänner.
 
-Det fungerar att registrera nya users och logga in.
-Det använder sig av JWT och har en expiration date.
+Jag kommer fortsätta med projektet när tid finns, men det som fungerar änsålänge är skapa användare och logga in, med JWT-authentisering, och sparande av ens profilbild.
+Man kan också se alla användare i fliken Community.
 
-Under community listas alla users från databasen.
-Det går att logga ut via "Log out" i ProfileCard (i LeftBar)
-Logouten rensar JWT i LocalStorage.
+(Mer ingående om vad jag implementerat finns i frontends readme)
 
-Inventory och att skapa items buggar/är WIP för tillfället.
-Jag har listat buggar/WIP i README på frontend.
-Där har jag också listat det jag gjort i varje uppdatering.
+All Item-funktionalitet är Work in Progress, inventoryt och att skapa items har jag ej hunnit implementera på ett felfritt sätt.
+
+Jag har ej möjlighet att presentera projektet på lektionstid då det tyvärr krockar med mitt nya uppdrag.
+
+Jag har deployat min app i nuvarande form, info nedan.
+Det är bara att hojta på discord om det är något du undrar över!
+/Niklas Hilmersson
+
+.
+.
+.
+
+=== DEPLOY INFO ===
+
+FIREBASE FRONTEND:
+https://split-cnas.web.app/
+
+Login:
+cnas@split.com
+pw: testing
+
+cnas2@split.com
+pw: testing2
+
+Alternativt skapa nytt konto :)
+
+HEROKU BACKEND:
+https://split-cnas.herokuapp.com/
+
+.
+.
+.
 
 === UPPGIFT 6 ===
 
@@ -31,8 +55,8 @@ Där har jag också listat det jag gjort i varje uppdatering.
 > > åtgärda CORS alternativt använda dig av en proxy.
 > > Läs mer om CORS här: https://www.npmjs.com/package/cors
 
-3. Deployment på valfri molnbaseradtjänst
-   https://www.heroku.com/ är ett bra alternativt att kostnadsfritt göra en deployment av sin applikation.
+> > DONE 3. Deployment på valfri molnbaseradtjänst
+> > https://www.heroku.com/ är ett bra alternativt att kostnadsfritt göra en deployment av sin applikation.
 
 > > DONE4. Bekanta dig med de juridiska aspekterna innan du deployar
 > > General Data Protection Regulation:
